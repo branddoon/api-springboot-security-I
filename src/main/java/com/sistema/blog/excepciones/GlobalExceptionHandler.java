@@ -11,6 +11,7 @@ import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
@@ -36,8 +37,8 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler{
 		ErrorDetalles errorDetalles = new ErrorDetalles(new Date(),exception.getMessage(),webRequest.getDescription(false));		
 		return new ResponseEntity<>(errorDetalles,HttpStatus.INTERNAL_SERVER_ERROR);
 	}
-	
-	@Override
+
+	@ExceptionHandler(HttpClientErrorException.BadRequest.class)
 	protected ResponseEntity<Object> handleMethodArgumentNotValid(MethodArgumentNotValidException ex,
 			HttpHeaders headers, HttpStatus status, WebRequest request) {
 			Map<String, String> errores = new HashMap<>();

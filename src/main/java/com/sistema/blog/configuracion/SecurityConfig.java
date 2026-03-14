@@ -5,24 +5,22 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
-import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
+import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
-import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
+import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
-
 import com.sistema.blog.seguridad.CustomUserDetailsService;
 import com.sistema.blog.seguridad.JwtAuthenticationEntryPoint;
 import com.sistema.blog.seguridad.JwtAuthentificationFilter;
 
 @Configuration
 @EnableWebSecurity
-@EnableGlobalMethodSecurity(prePostEnabled = true)
-public class SecurityConfig extends WebSecurityConfigurerAdapter{
+public class SecurityConfig {
 	
 	@Autowired 
 	private JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint;
@@ -39,43 +37,28 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter{
 	PasswordEncoder passwordEncoder() {
 		return new BCryptPasswordEncoder();
 	}
-	
-	@Override
-	protected void configure(HttpSecurity http) throws Exception {
-		http.csrf().disable()
-		.exceptionHandling()
-		.authenticationEntryPoint(jwtAuthenticationEntryPoint)
-		.and()
-		.sessionManagement()
-		.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
-		.and()
-		.authorizeHttpRequests().antMatchers(HttpMethod.GET,"/api/**")
-		.permitAll().antMatchers("/api/auth/**").permitAll()				
-		.anyRequest()
-		.authenticated();
-		http.addFilterBefore(jwtAuthentificationFilter(), UsernamePasswordAuthenticationFilter.class);
-		
-	}
-	
-	@Override
-	protected void configure(AuthenticationManagerBuilder auth) throws Exception {
-		auth.userDetailsService(userDetailsService).passwordEncoder(passwordEncoder());
-	}
-	
-	@Override
-	@Bean 
-	public AuthenticationManager authenticationManagerBean() throws Exception {
-		return super.authenticationManagerBean();
-	}
-	/* Carga de usuarios en memoria
-	@Override
+
 	@Bean
-	protected UserDetailsService userDetailsService() {
-		UserDetails brandon = User.builder().username("brandon").password(passwordEncoder().encode("password")).roles("USER").build();
-		UserDetails admin = User.builder().username("admin").password(passwordEncoder().encode("password")).roles("ADMIN").build();
-		
-		return new InMemoryUserDetailsManager(brandon,admin);
+	public SecurityFilterChain configure(HttpSecurity http)  throws Exception {
+		http.csrf(AbstractHttpConfigurer::disable)
+				.exceptionHandling(ex -> ex
+						.authenticationEntryPoint(jwtAuthenticationEntryPoint)
+				)
+				.sessionManagement(session -> session
+						.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+				)
+				.authorizeHttpRequests(auth -> auth
+						.requestMatchers(HttpMethod.GET, "/api/**").permitAll()
+						.requestMatchers("/api/auth/**").permitAll()
+						.anyRequest().authenticated()
+				)
+				.addFilterBefore(jwtAuthentificationFilter(), UsernamePasswordAuthenticationFilter.class);
+		return http.build();
 	}
-	*/
+
+	@Bean
+	public AuthenticationManager authenticationManager(AuthenticationConfiguration config) throws Exception {
+		return config.getAuthenticationManager();
+	}
 
 }

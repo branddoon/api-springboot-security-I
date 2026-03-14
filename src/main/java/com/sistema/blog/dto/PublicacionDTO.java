@@ -1,14 +1,12 @@
 package com.sistema.blog.dto;
+
 import java.util.Set;
-
-import javax.validation.constraints.NotEmpty;
-import javax.validation.constraints.Size;
-
 import com.sistema.blog.entidades.Comentario;
+import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.Size;
 
 public class PublicacionDTO {
-	
-	
+
 	private Long id;
 	
 	@NotEmpty

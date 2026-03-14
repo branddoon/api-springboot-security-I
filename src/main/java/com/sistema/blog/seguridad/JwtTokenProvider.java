@@ -1,23 +1,16 @@
 package com.sistema.blog.seguridad;
 
- 
-
+import java.nio.charset.StandardCharsets;
 import java.util.Date;
 
+import io.jsonwebtoken.*;
+import io.jsonwebtoken.security.Keys;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Component;
 
 import com.sistema.blog.excepciones.BlogAppException;
-
-import io.jsonwebtoken.Claims;
-import io.jsonwebtoken.ExpiredJwtException;
-import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.MalformedJwtException;
-import io.jsonwebtoken.SignatureAlgorithm;
-import io.jsonwebtoken.SignatureException;
-import io.jsonwebtoken.UnsupportedJwtException;
 
 @Component
 public class JwtTokenProvider {
@@ -36,13 +29,20 @@ public class JwtTokenProvider {
 	}
 	
 	public String obtenerUsernameDelJWT(String token) {
-		Claims claims = Jwts.parser().setSigningKey(jwtSecret).parseClaimsJws(token).getBody();
+		Claims claims = Jwts.parser()
+				.verifyWith(Keys.hmacShaKeyFor(jwtSecret.getBytes(StandardCharsets.UTF_8)))
+				.build()
+				.parseSignedClaims(token)
+				.getPayload();
 		return claims.getSubject();
 	}
 	
 	public boolean validarToken(String token) {
 		try {
-			Jwts.parser().setSigningKey(jwtSecret).parseClaimsJws(token);
+			Jwts.parser()
+					.verifyWith(Keys.hmacShaKeyFor(jwtSecret.getBytes()))
+					.build()
+					.parseSignedClaims(token);
 			return true;			
 		}catch(SignatureException ex) {
 			throw new BlogAppException(HttpStatus.BAD_REQUEST,"Firma JWT no valida"); 
