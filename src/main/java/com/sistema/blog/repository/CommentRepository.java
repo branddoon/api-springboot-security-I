@@ -3,8 +3,6 @@ package com.sistema.blog.repository;
 import java.util.List;
 
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.stereotype.Repository;
-
 import com.sistema.blog.entities.Comment;
 
 /**
@@ -12,7 +10,6 @@ import com.sistema.blog.entities.Comment;
  * Extends {@link JpaRepository} to provide standard CRUD operations
  * and adds a custom query to retrieve comments by their parent post.
  */
-@Repository
 public interface CommentRepository extends JpaRepository<Comment, Long> {
 
     /**

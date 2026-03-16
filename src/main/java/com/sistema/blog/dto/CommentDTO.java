@@ -9,7 +9,7 @@ import jakarta.validation.constraints.Size;
 public class CommentDTO {
 
     /** Unique identifier of the comment. Used when updating or referencing an existing comment. */
-    private long id;
+    private Long id;
 
     /** Name of the comment author. Must not be empty. */
     @NotEmpty(message = "Name must not be empty")
@@ -43,8 +43,7 @@ public class CommentDTO {
      * @param email the author email
      * @param body  the comment body
      */
-    public CommentDTO(long id, String name, String email, String body) {
-        super();
+    public CommentDTO(Long id, String name, String email, String body) {
         this.id    = id;
         this.name  = name;
         this.email = email;
@@ -60,7 +59,7 @@ public class CommentDTO {
      *
      * @return the comment ID
      */
-    public long getId() {
+    public Long getId() {
         return id;
     }
 
@@ -69,7 +68,7 @@ public class CommentDTO {
      *
      * @param id the comment ID
      */
-    public void setId(long id) {
+    public void setId(Long id) {
         this.id = id;
     }
 
