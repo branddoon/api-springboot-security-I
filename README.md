@@ -1,4 +1,4 @@
-# Blog REST API - Spring Boot
+# api-springboot-security-I
 
 A RESTful API for a blog system built with Spring Boot, Spring Security, and JWT authentication.
 
