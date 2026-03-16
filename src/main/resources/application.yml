@@ -18,5 +18,5 @@ logging:
     org.springframework.boot.autoconfigure: ERROR
 
 app:
-  jwt-secret: JWTSecretKey
+  jwt-secret: SecretKey2f1da39bd7d94a418d0c2f3b8399a6cfSystemBloga8648fc460774d1a9e1876bacc438142Last0119cbf26eae4e11b5504072d63d4ce2
   jwt-expiration-milliseconds: 604800000
